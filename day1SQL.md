@@ -59,6 +59,18 @@ LEFT OUTER JOIN
     AND DATEDIFF(q2.date, q1.date) = 1;
 ```
 
+# 4统计性别的人数，
+profile基本信息为：180cm,75kg,27,male\
+substring_index(profile,',',-1)\
+-1是指从后往前\
+','是分隔符
+```
+select 
+    substring_index(profile,',',-1) as gender,
+    count(device_id)
+from user_submit
+group by gender;
+```
 
 
 

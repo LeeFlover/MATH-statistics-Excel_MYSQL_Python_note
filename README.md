@@ -1,4 +1,4 @@
-self-learning for data analysis. \
+Self-learning for data analysis. \
 Learning Material including:
-https://www.nowcoder.com/
+https://www.nowcoder.com/ \
 https://leetcode.cn/

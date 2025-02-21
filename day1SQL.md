@@ -60,8 +60,10 @@ LEFT OUTER JOIN
 ```
 
 # 4统计性别的人数，
-profile基本信息为：180cm,75kg,27,male\
+*第一种方法*
 substring_index(profile,',',-1)\
+
+profile基本信息为：180cm,75kg,27,male\
 -1是指从后往前\
 ','是分隔符
 ```
@@ -71,8 +73,17 @@ select
 from user_submit
 group by gender;
 ```
-
-
+*第二种方法*
+case when + like
+```
+select 
+    case when profile like '%,male' then 'male'
+        when profile like '%female' then 'female' 
+        end gender,
+count(device_id)
+from user_submit
+group by gender;
+```
 
 
 

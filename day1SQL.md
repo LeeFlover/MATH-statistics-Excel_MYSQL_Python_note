@@ -85,7 +85,33 @@ from user_submit
 group by gender;
 ```
 
+# 5 找出学校GPA最低的学生
+或者简单地，子表查询
+```
+select
+    device_id,
+    university,
+    gpa
+from user_profile u 
+where gpa = 
+    (SELECT MIN(gpa)
+    from user_profile
+    where university = u.university)
+order by university asc;
+```
 
+以及where in方法
+```
+SELECT device_id, university, gpa
+FROM user_profile
+WHERE gpa IN( # IN 可替换为 = ANY
+    SELECT min(gpa)
+    FROM user_profile
+    GROUP BY university
+)
+GROUP BY university # 保证学校名不重复
+ORDER BY university; # 保证与题目要求输出顺序一致
+```
 
 
 

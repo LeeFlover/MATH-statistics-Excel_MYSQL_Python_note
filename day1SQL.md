@@ -41,3 +41,30 @@ select
     end age_cut
 from user_profile;
 ```
+
+# 3 计算平均次日留存率问题
+首先明确核心公式：次日平均留存率=两天都在人数/后一天人数
+做法如下：
+1. 用datediff区分第一天和第二天在线的device_id \
+datediff(data1,data2) = 1 表示条件为：data1-data2=1
+2. 用left outer join做自表联结，即在原表左侧新加一表
+3. 用distinct q2.device_id,q2.date做双重去重，找到符合条件的当天在线人数
+```
+SELECT
+    COUNT(DISTINCT q2.device_id, q2.date) / COUNT(DISTINCT q1.device_id, q1.date) AS avg_ret
+FROM
+    question_practice_detail AS q1
+LEFT OUTER JOIN
+    question_practice_detail AS q2 ON q1.device_id = q2.device_id
+    AND DATEDIFF(q2.date, q1.date) = 1;
+```
+
+
+
+
+
+
+
+
+
+

@@ -86,7 +86,7 @@ SELECT
 FROM 
     employees;
 ```
-其中
-PARTITION BY department：将数据按部门分区。
-ORDER BY salary DESC：在每个部门内，按薪水降序排列。
+其中\
+PARTITION BY department：将数据按部门分区。\
+ORDER BY salary DESC：在每个部门内，按薪水降序排列。\
 ROW_NUMBER() 将为每个部门的员工分配一个排名，薪水最高的员工排名为 1，依此类推。

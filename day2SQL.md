@@ -183,3 +183,13 @@ GROUP BY
 ORDER BY
     user_id;
 ```
+
+# 4查询倒数第三排
+核心要点：limit函数,limit 2,1表示2+1排，第一个
+```
+select *
+from employees
+where hire_date = (
+    select distinct hire_date from employees order by hire_date desc limit 2,1
+)
+```

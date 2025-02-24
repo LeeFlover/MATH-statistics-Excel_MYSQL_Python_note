@@ -109,12 +109,77 @@ from
             fdate,
             row_number() over(partition by user_id order by fdate) as 日期排序,
 # 将1号2号4号转化为123.
-            date_sub(fdate, interval row_number()over(partition by user_idorder by fdate) day)
-            as 初始日期
-#interval表示时间间隔
+            date_sub(fdate, interval row_number()over(partition by user_idorder by fdate) day) as 初始日期
+# date_sub计算时间差，如date_sub('2023-01-10', interval 5 day)结果为1月5号interval表示时间间隔
         from tb_dau
         where fdate between '2023-01-01' and '2023-01-31') as t1
     group by user_id, 初始日期) as t2
 
 group by user_id
+```
+
+另一种方法由GPT给出
+```
+WITH ranked_logins AS (
+    SELECT
+        user_id,
+        fdate,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY fdate) AS rn
+    FROM
+        tb_dau
+    WHERE
+        fdate BETWEEN '2023-01-01' AND '2023-01-31'
+),
+consecutive_days AS (
+    SELECT
+        user_id,
+        COUNT(*) AS num_consecutive_days
+    FROM
+        ranked_logins
+    GROUP BY
+        user_id,
+        DATE_SUB(fdate, INTERVAL rn DAY)
+)
+SELECT
+    user_id,
+    MAX(num_consecutive_days) AS max_consec_days
+FROM
+    consecutive_days
+GROUP BY
+    user_id;
+```
+
+第二个gpt思路
+```
+WITH ranked_logins AS (
+    -- 获取2023年1月1日至2023年1月31日的用户登录记录，并为每个登录日期分配一个行号
+    SELECT
+        user_id,
+        fdate,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY fdate) AS rn
+    FROM
+        tb_dau
+    WHERE
+        fdate BETWEEN '2023-01-01' AND '2023-01-31'
+),
+-- 计算连续天数的标识
+date_groups AS (
+    SELECT
+        user_id,
+        fdate,
+        DATE_SUB(fdate, INTERVAL rn DAY) AS date_group
+    FROM
+        ranked_logins
+)
+-- 计算每个用户的最大连续登录天数
+SELECT
+    user_id,
+    COUNT(*) AS max_consec_days
+FROM
+    date_groups
+GROUP BY
+    user_id,
+    date_group
+ORDER BY
+    user_id;
 ```

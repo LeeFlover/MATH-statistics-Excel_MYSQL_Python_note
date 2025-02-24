@@ -90,3 +90,31 @@ FROM
 PARTITION BY department：将数据按部门分区。\
 ORDER BY salary DESC：在每个部门内，按薪水降序排列。\
 ROW_NUMBER() 将为每个部门的员工分配一个排名，薪水最高的员工排名为 1，依此类推。
+
+# 3 查询最大连续登录天数问题
+关键词： row_number() over() 以及interval语句
+```
+select
+    user_id,
+    max(连续登录天数) as max_consec_days
+# 只用计算登录天数
+from
+    (select
+        user_id,
+        max(日期排序)-min(日期排序)+1 as 连续登录天数
+# 核心问题在于此公式，连续情况下，最大日期减最小日期减1
+    from
+        (select 
+            user_id,
+            fdate,
+            row_number() over(partition by user_id order by fdate) as 日期排序,
+# 将1号2号4号转化为123.
+            date_sub(fdate, interval row_number()over(partition by user_idorder by fdate) day)
+            as 初始日期
+#interval表示时间间隔
+        from tb_dau
+        where fdate between '2023-01-01' and '2023-01-31') as t1
+    group by user_id, 初始日期) as t2
+
+group by user_id
+```
